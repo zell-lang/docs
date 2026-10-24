@@ -9,7 +9,7 @@ Source of the Zell documentation site, built with [Docusaurus](https://docusauru
 `scripts/sync.mjs` (Node, no dependencies) runs before every build:
 
 1. clones or updates `zell-lang/zell` into `.cache/zell` at `ZELL_REF` (default `master`);
-2. copies the guides, the design documents, `EXAMPLES.md` and the VS Code README into `docs/`, rewriting links between them (links to files that are not on the site become GitHub links pinned to the synced commit), dropping HTML comments, escaping `<` outside code and turning `<url>` autolinks into links;
+2. copies the guides, the design documents, `EXAMPLES.md`, the README of every example project in `docs/examples/` (one page each under `/examples/<name>`) and the VS Code README into `docs/`, rewriting links between them (links to files that are not on the site become GitHub links pinned to the synced commit), dropping HTML comments, escaping `<` outside code and turning `<url>` autolinks into links;
 3. splits `DESIGN.md` (Russian) into one page per `##` section under `docs/spec/`; heading ids stay the same, so cross-links keep working;
 4. renders the standard-library reference, one page per namespace, from `std/docs.json` written by `zell doc --site`;
 5. writes `generated/` (sidebars, landing-page data, `version.json` shown in the footer as "docs built from zell@<sha>").

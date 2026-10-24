@@ -9,6 +9,7 @@ generated/
 /docs/design/
 /docs/std/
 /docs/examples.md
+/docs/examples/
 /docs/editors/vscode.md
 /docs/editors/other.md
 generated-api/
