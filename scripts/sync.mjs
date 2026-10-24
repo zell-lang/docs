@@ -103,7 +103,7 @@ function write(rel, text) {
 }
 
 function clean() {
-  for (const d of ['docs/guide', 'docs/spec', 'docs/design', 'docs/std']) fs.rmSync(path.join(ROOT, d), {recursive: true, force: true});
+  for (const d of ['docs/guide', 'docs/spec', 'docs/design', 'docs/std', 'docs/examples']) fs.rmSync(path.join(ROOT, d), {recursive: true, force: true});
   for (const f of ['docs/examples.md', 'docs/editors/vscode.md', 'docs/editors/other.md']) fs.rmSync(path.join(ROOT, f), {force: true});
   fs.rmSync(path.join(ROOT, 'generated'), {recursive: true, force: true});
   fs.mkdirSync(path.join(ROOT, 'generated'), {recursive: true});
@@ -228,6 +228,20 @@ const designFiles = fs
   });
 for (const d of designFiles) routes.set(`docs/${d}.md`, `/design/${d.toLowerCase().replace(/_/g, '-')}`);
 routes.set('docs/EXAMPLES.md', '/examples');
+// docs/examples/<name>/README.md: one page per example project, in the
+// order the index (docs/EXAMPLES.md) links them, then by name.
+const exampleProjects = (() => {
+  const dir = path.join(SRC, 'docs/examples');
+  if (!fs.existsSync(dir)) return [];
+  const names = fs.readdirSync(dir).filter((n) => fs.existsSync(path.join(dir, n, 'README.md')));
+  const index = read('docs/EXAMPLES.md');
+  const at = (n) => {
+    const i = index.indexOf(`examples/${n}/README.md`);
+    return i < 0 ? Infinity : i;
+  };
+  return names.sort((a, b) => at(a) - at(b) || a.localeCompare(b));
+})();
+for (const n of exampleProjects) routes.set(`docs/examples/${n}/README.md`, `/examples/${n}`);
 routes.set('editors/vscode/README.md', '/editors/vscode');
 
 // DESIGN.md: split by `##`, outside fences.
@@ -355,6 +369,14 @@ guideFiles.forEach((g, i) => {
 
 // Examples, VS Code
 emitDoc('docs/examples.md', 'docs/EXAMPLES.md', read('docs/EXAMPLES.md'), {slug: '/examples', title: 'Examples'});
+// Example projects: the README of each is the page (its H1 is the title);
+// the sidebar lists them under the index, in exampleProjects order.
+exampleProjects.forEach((n, i) => {
+  const rel = `docs/examples/${n}/README.md`;
+  emitDoc(`docs/examples/${n}.md`, rel, read(rel), {sidebar_label: n, sidebar_position: i + 1, slug: `/examples/${n}`});
+  pageCount++;
+});
+write('generated/examples.json', JSON.stringify(exampleProjects.map((n) => `examples/${n}`)));
 emitDoc('docs/editors/vscode.md', 'editors/vscode/README.md', read('editors/vscode/README.md'), {
   title: 'VS Code',
   sidebar_position: 2,
