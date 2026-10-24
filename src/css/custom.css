@@ -1,0 +1,39 @@
+:root {
+  --ifm-color-primary: #5b3df5;
+  --ifm-color-primary-dark: #4a28f3;
+  --ifm-color-primary-darker: #4220f2;
+  --ifm-color-primary-darkest: #3511cc;
+  --ifm-color-primary-light: #6c52f7;
+  --ifm-color-primary-lighter: #745cf8;
+  --ifm-color-primary-lightest: #9a88fa;
+  --ifm-font-family-base: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', 'Fira Code', SFMono-Regular, Menlo, Consolas, monospace;
+  --ifm-code-font-size: 90%;
+  --ifm-line-height-base: 1.7;
+  --ifm-heading-font-weight: 650;
+  --ifm-navbar-height: 3.6rem;
+  --docusaurus-highlighted-code-line-bg: rgba(91, 61, 245, 0.1);
+}
+[data-theme='dark'] {
+  --ifm-color-primary: #a594ff;
+  --ifm-color-primary-dark: #8d79ff;
+  --ifm-color-primary-darker: #7e68ff;
+  --ifm-color-primary-darkest: #5a3fff;
+  --ifm-color-primary-light: #bdb0ff;
+  --ifm-color-primary-lighter: #c9bfff;
+  --ifm-color-primary-lightest: #e6e1ff;
+  --ifm-background-color: #14141b;
+  --ifm-background-surface-color: #1a1a24;
+  --docusaurus-highlighted-code-line-bg: rgba(165, 148, 255, 0.15);
+}
+.navbar { box-shadow: 0 1px 0 var(--ifm-toc-border-color); }
+.navbar__title { font-weight: 700; letter-spacing: -0.01em; }
+.markdown h1 { letter-spacing: -0.02em; }
+.markdown h2 { margin-top: 2.2rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--ifm-toc-border-color); }
+.markdown table { display: table; width: 100%; font-size: 0.93rem; }
+.theme-doc-markdown code { border-radius: 4px; }
+div[class*='codeBlockContainer'] { border-radius: 10px; box-shadow: none; border: 1px solid var(--ifm-toc-border-color); }
+.menu__link { font-size: 0.93rem; }
+.footer { --ifm-footer-background-color: #101017; }
+.footer__copyright { opacity: 0.8; font-size: 0.85rem; }
+.footer__copyright a { color: inherit; text-decoration: underline; }

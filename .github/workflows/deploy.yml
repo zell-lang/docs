@@ -1,0 +1,78 @@
+name: Deploy docs
+
+# Manual only: the site is rebuilt from the language repository on demand.
+on:
+  workflow_dispatch:
+    inputs:
+      zell_ref:
+        description: 'Branch, tag or commit of zell-lang/zell to build the docs from'
+        required: true
+        default: 'master'
+      toolchain_tag:
+        description: 'zell-lang/zell release whose toolchain generates the API reference'
+        required: true
+        default: 'v0.1.0-rc.3'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      ZELL_REF: ${{ inputs.zell_ref }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch the language repository
+        run: node scripts/sync.mjs --fetch-only
+
+      - name: Download the toolchain
+        run: |
+          mkdir -p .cache/toolchain
+          gh release download "${{ inputs.toolchain_tag }}" -R zell-lang/zell -p 'zell-*-linux-amd64.tar.xz' -D .cache/toolchain
+          tar -xf .cache/toolchain/zell-*-linux-amd64.tar.xz -C .cache/toolchain
+          echo "ZELL_BIN=$(ls -d "$PWD"/.cache/toolchain/zell-*-linux-amd64/bin/zell)" >> "$GITHUB_ENV"
+
+      - name: Generate the standard-library reference
+        working-directory: .cache/zell
+        run: |
+          "$ZELL_BIN" --version
+          "$ZELL_BIN" doc --site "$GITHUB_WORKSPACE/generated-api"
+
+      - name: Sync the content
+        run: node scripts/sync.mjs
+
+      - name: Build the site
+        run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
